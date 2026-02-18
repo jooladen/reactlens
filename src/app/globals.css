@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --dimming-opacity: 0.3;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --dimming-opacity: 0.25;
 }
 
 @theme inline {
@@ -12,15 +21,159 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 코드 폰트 */
+.code-font {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+}
+
+/* dimming 클래스 - 뼈대에 포함되지 않는 줄 */
+.line-dimmed {
+  opacity: var(--dimming-opacity);
+  transition: opacity 0.2s ease;
+}
+
+.line-dimmed:hover {
+  opacity: 0.6;
+}
+
+/* Prism 테마 커스텀 - 라이트 모드 */
+pre[class*="language-"],
+code[class*="language-"] {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+pre[class*="language-"] {
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  border-radius: 0;
+  background: #fafafa;
+}
+
+.dark pre[class*="language-"] {
+  background: #1e1e1e;
+}
+
+/* 라이트 모드 Prism 토큰 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d;
+}
+
+.token.punctuation {
+  color: #393a34;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #005cc5;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #22863a;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #d73a49;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #d73a49;
+}
+
+.token.function,
+.token.class-name {
+  color: #6f42c1;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #e36209;
+}
+
+/* 다크 모드 Prism 토큰 */
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: #6a9955;
+}
+
+.dark .token.punctuation {
+  color: #d4d4d4;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol {
+  color: #b5cea8;
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin {
+  color: #ce9178;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url {
+  color: #d4d4d4;
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.keyword {
+  color: #569cd6;
+}
+
+.dark .token.function,
+.dark .token.class-name {
+  color: #dcdcaa;
+}
+
+.dark .token.regex,
+.dark .token.important,
+.dark .token.variable {
+  color: #d7ba7d;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
