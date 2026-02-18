@@ -4,16 +4,19 @@ import { useCallback, useState } from 'react';
 import FileUploader from '@/components/FileUploader';
 import Toast from '@/components/Toast';
 import SplitView from '@/components/SplitView';
+import StatsBar from '@/components/StatsBar';
+import ThemeToggle from '@/components/ThemeToggle';
 import { parseTSXFile } from '@/lib/parser';
 import { extractSkeleton } from '@/lib/extractor';
 import { calculateDimming } from '@/lib/differ';
-import type { ToastMessage } from '@/lib/types';
+import type { SkeletonResult, ToastMessage } from '@/lib/types';
 
 interface FileData {
   content: string;
   filename: string;
   skeletonCode: string;
   brightLines: Set<number>;
+  stats: SkeletonResult['stats'];
 }
 
 export default function Home() {
@@ -34,7 +37,13 @@ export default function Home() {
       const parseResult = parseTSXFile(content);
       const skeleton = extractSkeleton(parseResult);
       const brightLines = calculateDimming(content, parseResult);
-      setFileData({ content, filename, skeletonCode: skeleton.skeletonCode, brightLines });
+      setFileData({
+        content,
+        filename,
+        skeletonCode: skeleton.skeletonCode,
+        brightLines,
+        stats: skeleton.stats,
+      });
     },
     []
   );
@@ -49,21 +58,27 @@ export default function Home() {
         <Toast toasts={toasts} onRemove={removeToast} />
 
         {/* 헤더 */}
-        <header className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+        <header className="flex items-center justify-between px-5 py-2.5 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-base font-bold shrink-0">Code Skeleton</h1>
             <span className="text-sm text-gray-500 dark:text-gray-400 font-mono truncate">
               {fileData.filename}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="ml-4 shrink-0 rounded-lg px-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            다른 파일
-          </button>
+          <div className="flex items-center gap-2 ml-4 shrink-0">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="rounded-lg px-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              다른 파일
+            </button>
+            <ThemeToggle />
+          </div>
         </header>
+
+        {/* 통계 바 */}
+        <StatsBar stats={fileData.stats} />
 
         {/* 좌우 비교 뷰 */}
         <div className="flex-1 overflow-hidden">

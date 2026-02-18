@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, type RefObject } from 'react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-markup';
@@ -14,6 +14,8 @@ interface CodeViewerProps {
   /** 뼈대에 포함된 줄 번호 Set (밝은 줄) — 미전달 시 dimming 없음 */
   brightLines?: Set<number>;
   language?: string;
+  /** 스크롤 동기화용 외부 ref */
+  scrollRef?: RefObject<HTMLDivElement | null>;
 }
 
 export default function CodeViewer({
@@ -21,6 +23,7 @@ export default function CodeViewer({
   showLineNumbers = false,
   brightLines,
   language = 'tsx',
+  scrollRef,
 }: CodeViewerProps) {
   const highlightedLines = useMemo(() => {
     const grammar = Prism.languages[language] ?? Prism.languages['javascript'];
@@ -29,7 +32,7 @@ export default function CodeViewer({
   }, [code, language]);
 
   return (
-    <div className="h-full overflow-auto bg-[#fafafa] dark:bg-[#1e1e1e]">
+    <div ref={scrollRef} className="h-full overflow-auto bg-[#fafafa] dark:bg-[#1e1e1e]">
       <pre
         className="m-0 min-h-full"
         style={{ background: 'transparent', overflow: 'visible', padding: '1rem' }}

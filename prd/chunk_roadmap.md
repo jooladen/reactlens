@@ -148,29 +148,29 @@
 **선행조건:** Chunk 3의 SplitView, CodeViewer 완성
 
 **상세 작업:**
-- [ ] `components/SplitView.tsx` 스크롤 동기화 추가:
+- [x] `components/SplitView.tsx` 스크롤 동기화 추가:
   - 비율 기반 동기화 (왼쪽 30% → 오른쪽 30%)
   - 무한 루프 방지 (isSyncing 플래그)
   - 양방향: 왼쪽→오른쪽, 오른쪽→왼쪽
-- [ ] `components/StatsBar.tsx` 생성:
+- [x] `components/StatsBar.tsx` 생성:
   - 원본 라인 수 → 뼈대 라인 수 (압축률 %)
   - State 개수, Effect 개수, 함수 개수
   - 한 줄 바 형태, 비교 뷰 상단에 배치
-- [ ] `components/ThemeToggle.tsx` 생성:
+- [x] `components/ThemeToggle.tsx` 생성:
   - 🌙/☀️ 토글 버튼
   - 시스템 설정 감지 (초기값)
   - localStorage에 선택값 저장
   - html class="dark" 토글
   - Prism 테마 동적 전환 (다크/라이트)
-- [ ] `app/page.tsx` 헤더 업데이트:
+- [x] `app/page.tsx` 헤더 업데이트:
   - 로고 + 파일명 + "다른 파일" + ThemeToggle 배치
   - StatsBar 통합
 
 **완료조건:**
-- [ ] 좌우 스크롤이 동기화되는지 확인 (양방향)
-- [ ] 통계 바에 정확한 수치 표시
-- [ ] 다크/라이트 토글 동작 + Prism 테마 전환
-- [ ] 새로고침 후 테마 유지 (localStorage)
+- [x] 좌우 스크롤이 동기화되는지 확인 (양방향)
+- [x] 통계 바에 정확한 수치 표시
+- [x] 다크/라이트 토글 동작 + Prism 테마 전환
+- [x] 새로고침 후 테마 유지 (localStorage)
 
 ---
 

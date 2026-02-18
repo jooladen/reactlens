@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import CodeViewer from './CodeViewer';
 
 interface SplitViewProps {
@@ -14,6 +15,48 @@ export default function SplitView({
   skeletonCode,
   brightLines,
 }: SplitViewProps) {
+  const leftRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
+  const isSyncing = useRef(false);
+
+  useEffect(() => {
+    const leftEl = leftRef.current;
+    const rightEl = rightRef.current;
+    if (!leftEl || !rightEl) return;
+
+    const syncFromLeft = () => {
+      if (isSyncing.current) return;
+      isSyncing.current = true;
+      const maxLeft = leftEl.scrollHeight - leftEl.clientHeight;
+      if (maxLeft > 0) {
+        const ratio = leftEl.scrollTop / maxLeft;
+        const maxRight = rightEl.scrollHeight - rightEl.clientHeight;
+        rightEl.scrollTop = ratio * maxRight;
+      }
+      requestAnimationFrame(() => { isSyncing.current = false; });
+    };
+
+    const syncFromRight = () => {
+      if (isSyncing.current) return;
+      isSyncing.current = true;
+      const maxRight = rightEl.scrollHeight - rightEl.clientHeight;
+      if (maxRight > 0) {
+        const ratio = rightEl.scrollTop / maxRight;
+        const maxLeft = leftEl.scrollHeight - leftEl.clientHeight;
+        leftEl.scrollTop = ratio * maxLeft;
+      }
+      requestAnimationFrame(() => { isSyncing.current = false; });
+    };
+
+    leftEl.addEventListener('scroll', syncFromLeft, { passive: true });
+    rightEl.addEventListener('scroll', syncFromRight, { passive: true });
+
+    return () => {
+      leftEl.removeEventListener('scroll', syncFromLeft);
+      rightEl.removeEventListener('scroll', syncFromRight);
+    };
+  }, []);
+
   return (
     <div className="flex h-full">
       {/* 왼쪽: 원본 소스 */}
@@ -26,6 +69,7 @@ export default function SplitView({
             code={originalCode}
             showLineNumbers={true}
             brightLines={brightLines}
+            scrollRef={leftRef}
           />
         </div>
       </div>
@@ -39,6 +83,7 @@ export default function SplitView({
           <CodeViewer
             code={skeletonCode}
             showLineNumbers={false}
+            scrollRef={rightRef}
           />
         </div>
       </div>
