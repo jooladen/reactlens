@@ -9,7 +9,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { parseTSXFile } from '@/lib/parser';
 import { extractSkeleton } from '@/lib/extractor';
 import { calculateDimming } from '@/lib/differ';
-import type { SkeletonResult, ToastMessage } from '@/lib/types';
+import type { SkeletonResult, ToastMessage, ApiCallItem } from '@/lib/types';
 
 interface FileData {
   content: string;
@@ -17,6 +17,7 @@ interface FileData {
   skeletonCode: string;
   brightLines: Set<number>;
   stats: SkeletonResult['stats'];
+  apiCalls: ApiCallItem[];
 }
 
 /** 1024px 미만에서 PC 환경 안내 오버레이 */
@@ -79,6 +80,7 @@ export default function Home() {
         skeletonCode: skeleton.skeletonCode,
         brightLines,
         stats: skeleton.stats,
+        apiCalls: parseResult.apiCalls,
       });
     },
     [addToast]
@@ -123,6 +125,7 @@ export default function Home() {
             originalCode={fileData.content}
             skeletonCode={fileData.skeletonCode}
             brightLines={fileData.brightLines}
+            apiCalls={fileData.apiCalls}
           />
         </div>
       </div>

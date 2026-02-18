@@ -1,4 +1,4 @@
-import type { ParseResult, SkeletonResult } from './types';
+import type { ParseResult, SkeletonResult, ApiCallItem } from './types';
 
 /**
  * 파싱 결과를 카테고리별로 조립하여 뼈대 코드를 생성한다.
@@ -112,6 +112,27 @@ export function extractSkeleton(parseResult: ParseResult): SkeletonResult {
       stateCount: parseResult.states.length,
       effectCount: parseResult.effects.length,
       functionCount: parseResult.functions.length,
+      apiCallCount: parseResult.apiCalls.length,
     },
   };
+}
+
+/**
+ * API 호출 배열을 포맷팅된 문자열로 조립한다.
+ * 형식: 함수명(args) → called in: 위치 → triggered by: 의존성
+ * API 호출 0개면 빈 문자열 반환
+ */
+export function formatApiCallMap(apiCalls: ApiCallItem[]): string {
+  if (apiCalls.length === 0) return '';
+
+  return apiCalls
+    .map((call) => {
+      let line = `${call.callee}(${call.args})`;
+      line += ` → called in: ${call.calledIn}`;
+      if (call.triggeredBy) {
+        line += ` → triggered by: ${call.triggeredBy}`;
+      }
+      return line;
+    })
+    .join('\n');
 }

@@ -3,3 +3,7 @@ export const MAX_LINE_COUNT = 10000;
 export const ALLOWED_EXTENSIONS = ['.tsx', '.jsx'];
 export const DIMMING_OPACITY_DARK = 0.25;
 export const DIMMING_OPACITY_LIGHT = 0.3;
+export const API_CALL_VERBS = [
+  'get', 'post', 'put', 'delete', 'fetch',
+  'create', 'update', 'remove', 'save', 'load', 'send',
+] as const;

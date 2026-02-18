@@ -208,3 +208,44 @@
 - [x] 1024px 미만에서 안내 메시지 표시
 - [x] README.md 존재 + 내용 적절
 - [x] 전체 플로우 정상 동작 (업로드 → 분석 → 비교 → 다른 파일)
+
+---
+
+## Chunk 6: API 호출 지도 (API CALL MAP)
+
+**목표:** 코드에서 외부 API 호출을 감지하고, 호출 함수명 + 호출 위치 + 트리거를 정리한 지도를 뼈대 상단에 표시
+
+**선행조건:** Chunk 1~5 완료 (parser.ts, extractor.ts, SplitView 등 기존 구조)
+
+**상세 작업:**
+- [x] `lib/parser.ts` 수정 — API 호출 감지 로직 추가:
+  - 정규식 패턴 추가: fetch, axios, 커스텀 API 함수(await + HTTP 동사), supabase
+  - 각 API 호출에 대해 추출:
+    - 함수명 + 인자
+    - 원본 라인 번호
+    - 호출 위치 (어떤 함수/useEffect 안에서 호출되는지)
+    - triggered by (useEffect 의존성 배열 변수, 해당할 때만)
+  - ParseResult 타입에 `apiCalls` 필드 추가
+- [x] `lib/extractor.ts` 수정 — API CALL MAP 섹션 생성:
+  - apiCalls 배열을 포맷팅된 문자열로 조립
+  - 형식: 함수명() → called in: 위치 → triggered by: 변수
+  - API 호출 0개면 빈 문자열 반환
+- [x] `components/ApiCallMap.tsx` 생성:
+  - 접이식(collapsible) 섹션 UI
+  - 기본 펼침 상태
+  - `[API CALL MAP]` 헤더 + 접기/펼치기 토글
+  - 각 API 항목을 보기 좋게 포맷팅
+  - API 호출 0개면 컴포넌트 자체 숨김 (렌더링 안 함)
+- [x] `components/SplitView.tsx` 수정:
+  - 오른쪽 패널 상단에 ApiCallMap 컴포넌트 삽입 (뼈대 코드 위)
+- [x] `components/StatsBar.tsx` 수정:
+  - 📡 API 호출 수 항목 추가
+- [x] `lib/constants.ts` 수정:
+  - API_CALL_VERBS 상수 추가 (get, post, put, delete, fetch, create, update, remove, save, load, send)
+
+**완료조건:**
+- [x] API 호출이 있는 TSX 파일 업로드 시 → 뼈대 상단에 API CALL MAP 표시
+- [x] API 호출이 없는 TSX 파일 업로드 시 → API CALL MAP 섹션 숨김
+- [x] 각 API 함수의 called in, triggered by 정보가 정확히 표시
+- [x] StatsBar에 API 호출 수 표시
+- [x] 접기/펼치기 토글 동작 확인

@@ -2,18 +2,22 @@
 
 import { useEffect, useRef } from 'react';
 import CodeViewer from './CodeViewer';
+import ApiCallMap from './ApiCallMap';
+import type { ApiCallItem } from '@/lib/types';
 
 interface SplitViewProps {
   originalCode: string;
   skeletonCode: string;
   /** 원본에서 뼈대에 포함된 줄 번호 Set (밝은 줄) */
   brightLines: Set<number>;
+  apiCalls: ApiCallItem[];
 }
 
 export default function SplitView({
   originalCode,
   skeletonCode,
   brightLines,
+  apiCalls,
 }: SplitViewProps) {
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
@@ -79,6 +83,7 @@ export default function SplitView({
         <div className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shrink-0">
           🦴 뼈대
         </div>
+        <ApiCallMap apiCalls={apiCalls} />
         <div className="flex-1 overflow-hidden">
           <CodeViewer
             code={skeletonCode}

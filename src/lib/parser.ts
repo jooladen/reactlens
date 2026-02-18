@@ -1,3 +1,4 @@
+import { API_CALL_VERBS } from './constants';
 import type {
   ParseResult,
   ComponentItem,
@@ -7,6 +8,7 @@ import type {
   CustomHookItem,
   FunctionItem,
   ReturnJsxItem,
+  ApiCallItem,
 } from './types';
 
 /**
@@ -16,11 +18,12 @@ import type {
  */
 export function parseTSXFile(code: string): ParseResult {
   const lines = code.split('\n');
+  const effects = extractUseEffect(lines);
 
   return {
     components: extractComponents(lines),
     states: extractUseState(lines),
-    effects: extractUseEffect(lines),
+    effects,
     memos: [
       ...extractMemoOrCallback(lines, 'useMemo'),
       ...extractMemoOrCallback(lines, 'useCallback'),
@@ -28,6 +31,7 @@ export function parseTSXFile(code: string): ParseResult {
     customHooks: extractCustomHooks(lines),
     functions: extractFunctions(lines),
     returnJsx: extractReturnJsx(lines),
+    apiCalls: extractApiCalls(lines, effects),
     lines,
   };
 }
@@ -298,6 +302,115 @@ function findDependencies(lines: string[], startIdx: number): string {
   }
 
   return '[]';
+}
+
+/** API 호출 감지 (fetch / axios / supabase / await + HTTP 동사) */
+function extractApiCalls(lines: string[], effects: EffectItem[]): ApiCallItem[] {
+  const results: ApiCallItem[] = [];
+
+  type Context = { name: string; startLine: number; endLine: number; deps?: string };
+  const contexts: Context[] = [];
+
+  // useEffect 컨텍스트 등록
+  for (const eff of effects) {
+    contexts.push({
+      name: 'useEffect',
+      startLine: eff.lineNumber,
+      endLine: eff.endLineNumber ?? eff.lineNumber + 5,
+      deps: eff.dependencies,
+    });
+  }
+
+  // 함수 컨텍스트 스캔 (camelCase 함수만)
+  const fnArrowPat = /(?:const|let)\s+([a-z]\w*)\s*=\s*(?:async\s+)?\([^)]*\)\s*(?::\s*[\w<>,\s]+\s*)?=>\s*\{/;
+  const fnDeclPat = /(?:async\s+)?function\s+([a-z]\w*)\s*\(/;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(fnArrowPat) ?? lines[i].match(fnDeclPat);
+    if (m?.[1]) {
+      const endIdx = findBlockEnd(lines, i);
+      contexts.push({ name: m[1], startLine: i + 1, endLine: endIdx + 1 });
+    }
+  }
+
+  // HTTP 동사 정규식 (await obj.verb( 패턴)
+  const verbList = API_CALL_VERBS.join('|');
+  const awaitVerbRe = new RegExp(
+    `\\bawait\\s+(\\w+(?:\\.\\w+)*)\\.(${verbList})\\s*\\(`,
+    'i'
+  );
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineNum = i + 1;
+    let callee = '';
+    let args = '';
+
+    // 1. fetch(
+    const fetchM = line.match(/\bfetch\s*\((['"`][^'"`]*['"`]|[^,)]+)/);
+    if (fetchM) {
+      callee = 'fetch';
+      args = fetchM[1]?.trim() ?? '';
+    }
+
+    // 2. axios.method(
+    if (!callee) {
+      const axiosM = line.match(/\baxios\.(get|post|put|delete|patch|head)\s*\((['"`][^'"`]*['"`]|\w+)?/i);
+      if (axiosM) {
+        callee = `axios.${axiosM[1].toLowerCase()}`;
+        args = axiosM[2] ?? '';
+      }
+    }
+
+    // 3. supabase.from( / supabase.rpc(
+    if (!callee) {
+      const supM = line.match(/\bsupabase\.(from|rpc)\s*\((['"`][^'"`]*['"`]|\w+)?/);
+      if (supM) {
+        callee = `supabase.${supM[1]}`;
+        args = supM[2] ?? '';
+      }
+    }
+
+    // 4. await obj.verb(
+    if (!callee) {
+      const verbM = line.match(awaitVerbRe);
+      if (verbM) {
+        callee = `${verbM[1]}.${verbM[2].toLowerCase()}`;
+        args = '';
+      }
+    }
+
+    if (!callee) continue;
+
+    const ctx = findEnclosingContext(contexts, lineNum);
+    results.push({
+      callee,
+      args,
+      lineNumber: lineNum,
+      calledIn: ctx?.name ?? '컴포넌트 최상위',
+      triggeredBy:
+        ctx?.name === 'useEffect' && ctx.deps && ctx.deps !== '[]'
+          ? ctx.deps
+          : undefined,
+    });
+  }
+
+  return results;
+}
+
+/** 특정 줄 번호를 포함하는 가장 좁은 컨텍스트를 반환 */
+function findEnclosingContext(
+  contexts: Array<{ name: string; startLine: number; endLine: number; deps?: string }>,
+  lineNum: number
+) {
+  let best: (typeof contexts)[0] | null = null;
+  for (const ctx of contexts) {
+    if (lineNum >= ctx.startLine && lineNum <= ctx.endLine) {
+      if (!best || ctx.endLine - ctx.startLine < best.endLine - best.startLine) {
+        best = ctx;
+      }
+    }
+  }
+  return best;
 }
 
 /** JSX를 depth 1까지만 추출한다 */

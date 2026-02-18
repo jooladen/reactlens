@@ -61,6 +61,19 @@ export interface ReturnJsxItem extends ParsedItem {
   jsxStructure: string;
 }
 
+/** API 호출 항목 */
+export interface ApiCallItem {
+  /** 호출 표현식 (예: "fetch", "axios.get", "supabase.from") */
+  callee: string;
+  /** 첫 번째 인자 (URL, 테이블명 등) */
+  args: string;
+  lineNumber: number;
+  /** 호출 위치 (함수명, "useEffect", "컴포넌트 최상위") */
+  calledIn: string;
+  /** useEffect 의존성 배열 (해당할 때만) */
+  triggeredBy?: string;
+}
+
 /** 파싱 결과 전체 */
 export interface ParseResult {
   components: ComponentItem[];
@@ -70,6 +83,7 @@ export interface ParseResult {
   customHooks: CustomHookItem[];
   functions: FunctionItem[];
   returnJsx: ReturnJsxItem[];
+  apiCalls: ApiCallItem[];
   /** 원본 코드 줄 배열 */
   lines: string[];
 }
@@ -83,6 +97,7 @@ export interface SkeletonResult {
     stateCount: number;
     effectCount: number;
     functionCount: number;
+    apiCallCount: number;
   };
 }
 
