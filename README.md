@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Code Skeleton
 
-## Getting Started
+TSX/JSX 파일의 뼈대를 추출해서 원본과 좌우로 비교하는 Next.js 웹앱입니다.
 
-First, run the development server:
+## 실행 방법
 
 ```bash
+# 패키지 설치
+npm install
+# 또는
+pnpm install
+
+# 개발 서버 실행
 npm run dev
-# or
-yarn dev
-# or
+# 또는
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 http://localhost:3000 접속
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 사용법
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. `.tsx` 또는 `.jsx` 파일을 드래그앤드롭하거나 파일 선택 버튼으로 업로드
+2. 왼쪽 패널에서 원본 코드 확인 (뼈대에 포함된 줄은 밝게, 나머지는 흐리게 표시)
+3. 오른쪽 패널에서 추출된 뼈대 코드 확인
+4. 헤더의 🌙/☀️ 버튼으로 다크/라이트 모드 전환
+5. "다른 파일" 버튼으로 초기 화면 복귀
 
-## Learn More
+## 제한 사항
 
-To learn more about Next.js, take a look at the following resources:
+- 지원 확장자: `.tsx`, `.jsx`
+- 최대 파일 크기: 500KB
+- 최대 라인 수: 10,000줄
+- PC 환경(1024px 이상) 전용
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 기술 스택
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 항목 | 기술 |
+|------|------|
+| 프레임워크 | Next.js 16 (App Router) |
+| 언어 | TypeScript (strict 모드) |
+| 스타일 | Tailwind CSS v4 |
+| 신택스 하이라이팅 | Prism.js |
+| 패키지 매니저 | pnpm |
 
-## Deploy on Vercel
+## 뼈대 추출 규칙
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+정규식 기반으로 아래 항목을 추출합니다 (복잡한 패턴은 정확하지 않을 수 있습니다):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 항목 | 추출 내용 |
+|------|-----------|
+| 컴포넌트 선언 | `function`/`const` + PascalCase 선언부 |
+| State | `useState` 호출 (변수명, 초기값) |
+| Effects | `useEffect` 시그니처 (의존성 배열, 첫 줄) |
+| Memo/Callback | `useMemo`, `useCallback` (변수명, 의존성) |
+| 커스텀 Hook | `use`로 시작하는 Hook 호출부 |
+| 함수 시그니처 | 내부 함수 이름과 파라미터 |
+| 렌더링 구조 | `return` JSX의 depth 1 구조 |

@@ -19,6 +19,32 @@ interface FileData {
   stats: SkeletonResult['stats'];
 }
 
+/** 1024px 미만에서 PC 환경 안내 오버레이 */
+function MobileNotice() {
+  return (
+    <div className="flex lg:hidden flex-col items-center justify-center fixed inset-0 z-50 bg-background text-foreground px-8 text-center">
+      <svg
+        className="mb-6 h-16 w-16 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        />
+      </svg>
+      <h2 className="text-xl font-bold mb-2">PC 환경에서 사용해주세요</h2>
+      <p className="text-gray-500 dark:text-gray-400 text-sm">
+        Code Skeleton은 좌우 코드 비교 뷰를 제공하는 도구로,<br />
+        넓은 화면(1024px 이상)에서 최적화되어 있습니다.
+      </p>
+    </div>
+  );
+}
+
 export default function Home() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [fileData, setFileData] = useState<FileData | null>(null);
@@ -36,6 +62,16 @@ export default function Home() {
     (content: string, filename: string) => {
       const parseResult = parseTSXFile(content);
       const skeleton = extractSkeleton(parseResult);
+
+      // 파싱 실패 (뼈대 0줄) 에러 처리
+      if (skeleton.stats.skeletonLines === 0) {
+        addToast(
+          '뼈대를 추출하지 못했습니다. 지원하지 않는 코드 구조일 수 있습니다.',
+          'warning'
+        );
+        return;
+      }
+
       const brightLines = calculateDimming(content, parseResult);
       setFileData({
         content,
@@ -45,7 +81,7 @@ export default function Home() {
         stats: skeleton.stats,
       });
     },
-    []
+    [addToast]
   );
 
   const handleReset = useCallback(() => {
@@ -55,6 +91,7 @@ export default function Home() {
   if (fileData) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
+        <MobileNotice />
         <Toast toasts={toasts} onRemove={removeToast} />
 
         {/* 헤더 */}
@@ -94,6 +131,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <MobileNotice />
       <Toast toasts={toasts} onRemove={removeToast} />
       <FileUploader
         onFileUpload={handleFileUpload}
