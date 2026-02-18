@@ -67,7 +67,7 @@
 **선행조건:** Chunk 1의 프로젝트 구조, constants.ts, globals.css
 
 **상세 작업:**
-- [ ] `components/FileUploader.tsx` 생성:
+- [x] `components/FileUploader.tsx` 생성:
   - 드래그앤드롭 영역 (점선 테두리, 아이콘, 안내 텍스트)
   - 파일 선택 버튼
   - 드래그 오버 시 시각적 피드백 (테두리 색 변경)
@@ -76,11 +76,11 @@
   - 라인 수 검증 (10,000줄)
   - 빈 파일 검증
   - 여러 파일 드롭 시 첫 번째만 처리 + 안내
-- [ ] `components/Toast.tsx` 생성:
+- [x] `components/Toast.tsx` 생성:
   - 우측 상단 토스트 메시지
   - 에러(빨강), 안내(노랑) 구분
   - 3초 후 자동 사라짐 (fadeout 애니메이션)
-- [ ] `lib/parser.ts` 생성:
+- [x] `lib/parser.ts` 생성:
   - parseTSXFile(code: string) → ParseResult
   - 정규식 패턴으로 추출:
     - 컴포넌트 선언부 (function/const + PascalCase)
@@ -91,21 +91,21 @@
     - 함수 시그니처 (이름, 파라미터)
     - return JSX 구조 (depth 1)
   - 각 추출 항목에 원본 라인 번호 매핑
-- [ ] `lib/extractor.ts` 생성:
+- [x] `lib/extractor.ts` 생성:
   - extractSkeleton(parseResult) → SkeletonResult
   - 카테고리별 조립: State → Effects → 함수 → 렌더링 구조
   - 카테고리 구분 주석 삽입
   - 뼈대 코드 문자열 생성
-- [ ] `lib/differ.ts` 생성:
+- [x] `lib/differ.ts` 생성:
   - calculateDimming(code, parseResult) → Set<number>
   - 원본 코드의 각 줄이 뼈대에 포함되는지 여부 (줄 번호 Set)
   - 뼈대에 포함된 줄 번호 → 밝게, 나머지 → dimming
 
 **완료조건:**
-- [ ] 파일 드래그앤드롭 동작 확인
-- [ ] 잘못된 파일 업로드 시 토스트 에러 메시지 표시
-- [ ] 유효한 TSX 파일 업로드 시 console.log로 파싱 결과 출력 (임시)
-- [ ] 뼈대 추출 결과 + dimming 줄 번호 Set 확인
+- [x] 파일 드래그앤드롭 동작 확인
+- [x] 잘못된 파일 업로드 시 토스트 에러 메시지 표시
+- [x] 유효한 TSX 파일 업로드 시 console.log로 파싱 결과 출력 (임시)
+- [x] 뼈대 추출 결과 + dimming 줄 번호 Set 확인
 
 ---
 
