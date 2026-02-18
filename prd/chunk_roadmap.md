@@ -116,28 +116,28 @@
 **선행조건:** Chunk 2의 FileUploader, parser, extractor, differ 완성
 
 **상세 작업:**
-- [ ] `components/CodeViewer.tsx` 생성:
+- [x] `components/CodeViewer.tsx` 생성:
   - Prism.js로 TSX/JSX 신택스 하이라이팅
   - 라인 넘버 표시 옵션 (왼쪽 패널용)
   - 줄 단위 dimming 클래스 적용 (dimmingLines Set 받아서)
   - 모노스페이스 폰트 적용
   - 코드 영역 스크롤 가능 (overflow-auto)
-- [ ] `components/SplitView.tsx` 생성:
+- [x] `components/SplitView.tsx` 생성:
   - 50:50 좌우 분할 레이아웃
   - 왼쪽: 원본 CodeViewer (라인 넘버 O, dimming O)
   - 오른쪽: 뼈대 CodeViewer (라인 넘버 X, dimming X)
   - 패널 헤더: "원본 소스" / "🦴 뼈대"
-- [ ] `app/page.tsx` 통합:
+- [x] `app/page.tsx` 통합:
   - 파일 미업로드: FileUploader 표시
   - 파일 업로드 후: SplitView 표시
   - 헤더에 파일명 + "다른 파일" 버튼
   - "다른 파일" 클릭 시 초기화 → FileUploader로 복귀
 
 **완료조건:**
-- [ ] 파일 업로드 → 좌우 비교 뷰 표시
-- [ ] 왼쪽 패널: 원본 코드 + 라인 넘버 + dimming 적용
-- [ ] 오른쪽 패널: 뼈대 코드 + 신택스 하이라이팅
-- [ ] "다른 파일" 버튼으로 초기 화면 복귀
+- [x] 파일 업로드 → 좌우 비교 뷰 표시
+- [x] 왼쪽 패널: 원본 코드 + 라인 넘버 + dimming 적용
+- [x] 오른쪽 패널: 뼈대 코드 + 신택스 하이라이팅
+- [x] "다른 파일" 버튼으로 초기 화면 복귀
 
 ---
 
